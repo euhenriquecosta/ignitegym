@@ -32,7 +32,7 @@ export function SignIn() {
           <Input placeholder="E-mail" keyboardType="email-address" autoCapitalize="none" />
           <Input placeholder="Senha" secureTextEntry />
 
-          <Button title="Acessar" />
+          <Button title="Acessar" isLoading/>
         </Center>
       </VStack>
 
