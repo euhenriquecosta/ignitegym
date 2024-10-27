@@ -3,7 +3,7 @@ import { TouchableOpacity, TouchableOpacityProps } from "react-native"
 import { ChevronRight } from "lucide-react-native"
 
 
-type Props = TouchableOpacityProps
+type Props = TouchableOpacityProps & {}
 
 export function ExerciseCard({ ...rest }: Props) {
   return (

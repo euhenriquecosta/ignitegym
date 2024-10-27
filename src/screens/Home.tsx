@@ -7,6 +7,7 @@ import { VStack, Text, HStack, Heading } from "@gluestack-ui/themed";
 import { ExerciseCard } from "@components/ExerciseCard";
 
 
+
 export function Home() {
   const [groups, setGroups] = useState(["Costas", "Biceps", "Triceps", "Ombro"])
   const [exercises, setExercises] = useState([
@@ -16,7 +17,7 @@ export function Home() {
     "Levantamento terra",
     "Supino Reto",
     "Supino Inclinado",
-    "Biceps Martelo",
+    "Biceps Martelo"
   ])
   const [groupSelected, setGroupSelected] = useState("costa")
 
@@ -32,7 +33,7 @@ export function Home() {
         renderItem={({ item }) => (
           <Group
             name={item}
-            isActive={groupSelected === item}
+            isActive={groupSelected.toLowerCase() === item.toLowerCase()}
             onPress={() => setGroupSelected(item)}
           />
         )}
@@ -54,7 +55,7 @@ export function Home() {
           </Heading>
 
           <Text color="$gray200" fontSize="$sm" fontFamily="$body">
-            4
+            {exercises.length}
           </Text>
         </HStack>
 
