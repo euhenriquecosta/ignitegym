@@ -17,7 +17,7 @@ export function Button({ title, variant = "solid", isLoading = false, ...rest }:
       borderWidth={variant === "outline" ? "$1" : 0}
       borderColor="$green500"
       rounded="$sm"
-      $active-backgroundColor={variant === "outline" ? "$gray600" : "$green700"}
+      $active-backgroundColor={variant === "outline" ? "$gray600" : "$green800"}
       disabled={isLoading}
       {...rest}
     >
