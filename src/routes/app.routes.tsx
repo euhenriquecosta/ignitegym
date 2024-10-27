@@ -8,7 +8,8 @@ import { Home } from '@screens/Home';
 import { Exercise } from '@screens/Exercise';
 import { Profile } from '@screens/Profile';
 import { History } from '@screens/History';
-import { gluestackUIConfig } from '@gluestack-ui/config';
+
+import { gluestackUIConfig } from '../config/gluestack-ui.config';
 import { Platform } from 'react-native';
 
 type AppRoutes = {
