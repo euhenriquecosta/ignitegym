@@ -59,6 +59,7 @@ export function AppRoutes() {
       <Screen
         name='exercise'
         component={Exercise}
+        options={{ tabBarButton: () => null}}
       />
     </Navigator>
   )
