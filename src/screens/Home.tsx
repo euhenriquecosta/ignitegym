@@ -1,13 +1,32 @@
 import { Group } from "@components/Group";
 import { HomeHeader } from "@components/HomeHeader";
-import { VStack, Text } from "@gluestack-ui/themed";
+import { VStack, Text, HStack } from "@gluestack-ui/themed";
+import { useState } from "react";
 
 
 export function Home() {
-    return (
-        <VStack flex={1}>
-            <HomeHeader />
-            <Group name="teste" isActive={false} />
-        </VStack>
-    )
+  const [groupSelected, setGroupSelected] = useState("costa")
+
+  return (
+    <VStack flex={1}>
+      <HomeHeader />
+      <HStack>
+        <Group
+          name="Ombro"
+          isActive={groupSelected === "ombro"}
+          onPress={() => setGroupSelected("ombro")}
+        />
+        <Group
+          name="Costas"
+          isActive={groupSelected === "costas"}
+          onPress={() => setGroupSelected("costas")}
+        />
+        <Group
+          name="Pezinho"
+          isActive={groupSelected === "pezinho"}
+          onPress={() => setGroupSelected("pezinho")}
+        />
+      </HStack>
+    </VStack>
+  )
 }
