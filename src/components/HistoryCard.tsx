@@ -3,8 +3,8 @@ import { Heading, HStack, Text, VStack } from "@gluestack-ui/themed";
 export function HistoryCard() {
   return (
       <HStack w="$full" px="$4" py="$4" mb="$3" bg="$gray600" rounded="$md" alignItems="center" justifyContent="space-between">
-        <VStack mr="$5">
-          <Heading color="$white" fontSize="$md" textTransform="capitalize" fontFamily="$header">
+        <VStack flex={1} mr="$5">
+          <Heading color="$white" fontSize="$md" textTransform="capitalize" fontFamily="$header" numberOfLines={1}>
             Costas
           </Heading>
           
