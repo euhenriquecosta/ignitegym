@@ -1,7 +1,6 @@
 import { HistoryCard } from "@components/HistoryCard";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { VStack, Text, SectionList, Heading } from "@gluestack-ui/themed";
-import { iTerm } from "ansi-escapes";
 import { useState } from "react";
 
 export function History() {
@@ -25,7 +24,7 @@ export function History() {
       <ScreenHeader title="Histórico de Exercícios" />
       <SectionList
         sections={exercises}
-        keyExtractor={(item) => item}
+        keyExtractor={(item: any) => item}
         renderItem={() => <HistoryCard />}
         renderSectionHeader={({ section }) => (
           <Heading
