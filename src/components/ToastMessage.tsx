@@ -12,7 +12,7 @@ type Props = {
   id: string
   title: string
   description?: string
-  action?: "error" | "sucess"
+  action?: "error" | "success"
   onClose: () => void
 }
 
@@ -20,15 +20,16 @@ export function ToastMessage({
   id,
   title,
   description,
-  action = "sucess",
+  action = "success",
   onClose,
 }: Props) {
   return (
     <Toast
       nativeID={`toast-${id}`}
       action={action}
-      bgColor={action == "sucess" ? "$green500" : "$red500"}
+      bgColor={action == "success" ? "$green500" : "$red500"}
       mt="$10"
+      mb="$10"
     >
       <VStack
         space="xs"
