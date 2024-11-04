@@ -156,7 +156,7 @@ export function SignUp() {
             <Center position="relative" w="100%">
               <Button
                 title={isLoading ? "" : "Criar e acessar"}
-                onPress={handleSubmit(handleSignUp)}
+                onPress={isLoading ? null : handleSubmit(handleSignUp)}
                 isDisabled={isLoading}
                 opacity={isLoading ? 0.6 : 1} // Ajusta a opacidade quando está carregando
               />
