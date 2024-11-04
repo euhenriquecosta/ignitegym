@@ -3,8 +3,13 @@ import { ScreenHeader } from "@components/ScreenHeader";
 import { VStack, Text, SectionList, Heading } from "@gluestack-ui/themed";
 import { useState } from "react";
 
+type ExerciseHistorySection = {
+  title: string;
+  data: string[];
+}
+
 export function History() {
-  const [exercises, setExercises] = useState([
+  const [exercises, setExercises] = useState<ExerciseHistorySection[]>([
     {
       title: "22.07.24",
       data: ["Puxada frontal", "Remada unilateral"],
@@ -16,7 +21,7 @@ export function History() {
     {
       title: "23.08.24",
       data: ["Puxada frontal"],
-    },
+    }
   ])
 
   return (
@@ -26,7 +31,7 @@ export function History() {
         sections={exercises}
         keyExtractor={(item: any) => item}
         renderItem={() => <HistoryCard />}
-        renderSectionHeader={({ section }) => (
+        renderSectionHeader={({ section }: any) => (
           <Heading
             color="$gray200"
             fontSize="$md"
