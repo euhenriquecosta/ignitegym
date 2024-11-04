@@ -1,16 +1,20 @@
+import { useState } from "react";
+
 import { useNavigation } from "@react-navigation/native";
-import { Center, Heading, Image, ScrollView, Text, VStack } from "@gluestack-ui/themed";
+import { Center, Heading, Image, ScrollView, Spinner, Text, useToast, VStack } from "@gluestack-ui/themed";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup';
 
-import { api } from "@services/api"; 
+import { api } from "@services/api";
 
 import BackgroundImg from "@assets/background.png";
 import Logo from "@assets/logo.svg";
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { AppError } from "@utils/AppError";
+import { ToastMessage } from "@components/ToastMessage";
 
 type FormDataProps = {
   name: string;
@@ -18,6 +22,7 @@ type FormDataProps = {
   password: string;
   password_confirm: string;
 }
+
 
 const signUpSchema = yup.object({
   name: yup.string().required('Informe o nome.'),
@@ -27,6 +32,8 @@ const signUpSchema = yup.object({
 });
 
 export function SignUp() {
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast()
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
     resolver: yupResolver(signUpSchema)
@@ -39,26 +46,28 @@ export function SignUp() {
   }
 
   async function handleSignUp({ name, email, password }: FormDataProps) {
+    setIsLoading(true);
+    try {
+      const response = await api.post('/users', { name, email, password })
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError ? error.message : 'Não foi prossível criar a conta. Tente novamente mais tarde'
 
-    const response = await api.post('/users', {name, email, password})
-    console.log(response.data);
-    
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        )
+      })
+    } finally {
+      setIsLoading(false);
+    }
 
-    /*
-    const response = await fetch('http://192.168.100.112:3333/users', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({name, email, password})
-    })
-    const data = await response.json();
-    console.log(data);
-    */
-
-
-      
   }
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}
@@ -144,7 +153,21 @@ export function SignUp() {
             />
 
 
-            <Button title="Criar e acessar" onPress={handleSubmit(handleSignUp)} />
+            <Center position="relative" w="100%">
+              <Button
+                title={isLoading ? "" : "Criar e acessar"}
+                onPress={handleSubmit(handleSignUp)}
+                isDisabled={isLoading}
+                opacity={isLoading ? 0.6 : 1} // Ajusta a opacidade quando está carregando
+              />
+              {isLoading && (
+                <Spinner
+                  color="$white"
+                  position="absolute"
+                  size="small"
+                />
+              )}
+            </Center>
           </Center>
 
           <Button title="Voltar para o login" variant="outline" mt="$12" onPress={handleGoBack} />
