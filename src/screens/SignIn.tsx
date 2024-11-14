@@ -1,6 +1,7 @@
 import { Controller, useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
-import { Center, Heading, Image, onChange, ScrollView, Text, VStack } from "@gluestack-ui/themed";
+import { Center, Heading, Image, useToast, ScrollView, Text, VStack, Spinner } from "@gluestack-ui/themed";
+import { ToastMessage } from "@components/ToastMessage";
 
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
@@ -14,6 +15,8 @@ import { Button } from "@components/Button";
 
 import * as yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
+import { AppError } from "@utils/AppError";
+import { useState } from "react";
 
 type FormDataProps = {
   email: string;
@@ -26,9 +29,12 @@ const signInSchema = yup.object({
 })
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false)
+
   const { signIn } = useAuth();
 
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
+  const toast = useToast();
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
     resolver: yupResolver(signInSchema)
@@ -39,7 +45,29 @@ export function SignIn() {
   }
 
   async function handleSignIn({ email, password }: FormDataProps) {
-    await signIn(email, password);
+    try {
+      setIsLoading(true);
+      await signIn(email, password);
+
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError ? error.message : 'Não foi possivel entrar. Tente novamente ou mais tarde.'
+
+      setIsLoading(false);
+      
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        )
+      })
+    }
   }
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}
@@ -95,8 +123,21 @@ export function SignIn() {
               )}
             />
             
-
-            <Button title="Acessar" onPress={handleSubmit(handleSignIn)}/>
+            <Center position="relative" w="100%">
+              <Button
+                title={isLoading ? "" : "Acessar"}
+                onPress={isLoading ? null : handleSubmit(handleSignIn)}
+                isDisabled={isLoading}
+                opacity={isLoading ? 0.6 : 1} // Ajusta a opacidade quando está carregando
+              />
+              {isLoading && (
+                <Spinner
+                  color="$white"
+                  position="absolute"
+                  size="small"
+                />
+              )}
+            </Center>
           </Center>
 
           <Center flex={1} justifyContent="flex-end" mt="$4">
