@@ -4,7 +4,7 @@ import { useFonts, Roboto_700Bold, Roboto_400Regular } from '@expo-google-fonts/
 
 import { Routes } from '@routes/index';
 
-import { AuthContext } from '@contexts/AuthContext';
+import { AuthContext, AuthContextProvider } from '@contexts/AuthContext';
 
 import { config } from './src/config/gluestack-ui.config';
 import { Loading } from '@components/Loading';
@@ -17,20 +17,13 @@ export default function App() {
 
       <StatusBar backgroundColor="transparent" barStyle="light-content" translucent />
 
-      <AuthContext.Provider value={{
-        user: {
-          id: '1',
-          name: 'Henrique',
-          email: 'user@email.com',
-          avatar: 'avatar.png'
-        }
-      }}>
+      <AuthContextProvider>
         {fontsLoaded ? (
           <Routes />
         ) : (
           <Loading />
         )}
-      </AuthContext.Provider>
+      </AuthContextProvider>
 
     </GluestackUIProvider>
   );
