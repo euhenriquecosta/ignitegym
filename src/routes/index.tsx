@@ -2,7 +2,7 @@
 import { useContext } from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
-import { AuthContext } from "@contexts/AuthContext";
+import { useAuth } from "@hooks/useAuth";
 
 import { AuthRotes } from "./auth.routes";
 import { AppRoutes } from "./app.routes";
@@ -12,8 +12,9 @@ import { Box } from "@gluestack-ui/themed";
 
 
 export function Routes() {
-  const contextData = useContext(AuthContext);
-  console.log("USUÁRIO LOGADO =>", contextData)
+  const { user } = useAuth()
+
+  console.log("USUÁRIO LOGADO =>", user)
 
   const theme = DefaultTheme
   theme.colors.background = gluestackUIConfig.tokens.colors.trueGray800
