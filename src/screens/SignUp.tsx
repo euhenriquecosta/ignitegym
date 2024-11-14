@@ -49,8 +49,26 @@ export function SignUp() {
     setIsLoading(true);
     try {
       const response = await api.post('/users', { name, email, password })
+      if (response.status === 201) {
+        // Conta criada com sucesso
+        toast.show({
+          placement: "top",
+          render: ({ id }) => (
+            <ToastMessage
+              id={id}
+              action="success"
+              title="Conta criada com sucesso!"
+              onClose={() => toast.close(id)}
+            />
+          )
+        });
+        setTimeout(() => navigation.goBack(), 1500);
+        
+      } else {
+        throw new Error('Falha ao criar a conta. Tente novamente.');
+      }
     } catch (error) {
-      const isAppError = error instanceof AppError;
+      const isAppError = error instanceof AppError; 
       const title = isAppError ? error.message : 'Não foi prossível criar a conta. Tente novamente mais tarde'
 
       return toast.show({
@@ -130,6 +148,7 @@ export function SignUp() {
                   placeholder="Senha"
                   secureTextEntry
                   onChangeText={onChange}
+                  autoComplete="off"
                   value={value}
                   errorMessage={errors.password?.message}
                 />
@@ -144,6 +163,7 @@ export function SignUp() {
                   placeholder="Confirme a Senha"
                   secureTextEntry
                   onChangeText={onChange}
+                  autoComplete="off"
                   value={value}
                   onSubmitEditing={handleSubmit(handleSignUp)}
                   returnKeyType="send"
