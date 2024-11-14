@@ -1,17 +1,19 @@
-import { Center, Heading, Image, onChange, ScrollView, Text, VStack } from "@gluestack-ui/themed"
+import { Controller, useForm } from "react-hook-form";
+import { useNavigation } from "@react-navigation/native";
+import { Center, Heading, Image, onChange, ScrollView, Text, VStack } from "@gluestack-ui/themed";
 
-import BackgroundImg from "@assets/background.png"
-import Logo from "@assets/logo.svg"
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
+import { useAuth } from '@hooks/useAuth';
 
-import { Input } from "@components/Input"
-import { Button } from "@components/Button"
+import Logo from "@assets/logo.svg";
+import BackgroundImg from "@assets/background.png";
 
-import { useNavigation } from "@react-navigation/native"
-import { AuthNavigatorRoutesProps } from "@routes/auth.routes"
-import { Controller, useForm } from "react-hook-form"
+import { Input } from "@components/Input";
+import { Button } from "@components/Button";
+
 import * as yup from 'yup';
-import { yupResolver } from "@hookform/resolvers/yup"
+import { yupResolver } from "@hookform/resolvers/yup";
 
 type FormDataProps = {
   email: string;
@@ -24,6 +26,7 @@ const signInSchema = yup.object({
 })
 
 export function SignIn() {
+  const { signIn } = useAuth();
 
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
@@ -36,7 +39,7 @@ export function SignIn() {
   }
 
   function handleSignIn({ email, password }: FormDataProps) {
-    console.log(email, password);
+    signIn(email, password);
   }
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}
