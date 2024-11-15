@@ -5,7 +5,7 @@ import axios from "axios";
 import { AppError } from "@utils/AppError";
 
 const api = axios.create({
-  baseURL: 'http://172.20.10.2:3333',
+  baseURL: 'http://192.168.1.105:3333',
   timeout: 60000,
   timeoutErrorMessage: "A requisição demorou muito para responder. Tente novamente mais tarde.",
 });
