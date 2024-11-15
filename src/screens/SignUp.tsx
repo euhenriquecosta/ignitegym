@@ -8,6 +8,8 @@ import * as yup from 'yup';
 
 import { api } from "@services/api";
 
+import { useAuth } from "@hooks/useAuth";
+
 import BackgroundImg from "@assets/background.png";
 import Logo from "@assets/logo.svg";
 
@@ -33,6 +35,8 @@ const signUpSchema = yup.object({
 
 export function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
+  const { signIn } = useAuth();
+
   const toast = useToast()
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
@@ -62,7 +66,8 @@ export function SignUp() {
             />
           )
         });
-        setTimeout(() => navigation.goBack(), 1500);
+
+        signIn(email, password);
         
       } else {
         throw new Error('Falha ao criar a conta. Tente novamente.');
@@ -173,21 +178,11 @@ export function SignUp() {
             />
 
 
-            <Center position="relative" w="100%">
-              <Button
-                title={isLoading ? "" : "Criar e acessar"}
-                onPress={isLoading ? null : handleSubmit(handleSignUp)}
-                isDisabled={isLoading}
-                opacity={isLoading ? 0.6 : 1} // Ajusta a opacidade quando está carregando
-              />
-              {isLoading && (
-                <Spinner
-                  color="$white"
-                  position="absolute"
-                  size="small"
-                />
-              )}
-            </Center>
+            <Button
+              title={"Criar e acessar"}
+              onPress={handleSubmit(handleSignUp)}
+              isLoading={isLoading}
+            />
           </Center>
 
           <Button title="Voltar para o login" variant="outline" mt="$12" onPress={handleGoBack} />
