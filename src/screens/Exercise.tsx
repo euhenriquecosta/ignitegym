@@ -23,6 +23,7 @@ type RouteParamsProps = {
 }
 export function Exercise() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isSendingCompletedExerciseLoading, setIsSendingCompletedExerciseLoading] = useState(false);
   const [exercise, setExercise] = useState({} as ExerciseDTO);
 
   const toast = useToast();
@@ -35,15 +36,12 @@ export function Exercise() {
   async function fetchExerciseDetails() {
     try {
       setIsLoading(true);
-      const response = await api.get(`/exercises/${exerciseId}`)
-      console.log("ID => ", exerciseId);
+      const response = await api.get(`/exercises/${exerciseId}`);
       setExercise(response.data);
-      
+
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError ? error.message : 'Não foi possível carregar as informações do exercicio';
-
-      console.log(title);
       
       toast.show({
         placement: "top",
@@ -61,6 +59,45 @@ export function Exercise() {
       setIsLoading(false);
     }
     
+  }
+
+  async function handleExerciseCompleted() {
+    try {
+      setIsSendingCompletedExerciseLoading(true);
+      const response = await api.post( '/history', {exercise_id: exerciseId });
+
+      if(response.status === 201) {
+        toast.show({
+          placement: "top",
+          render: ({id}) => (
+            <ToastMessage 
+              id={id}
+              action="success"
+              title="Exercício marcado como concluído!"
+              onClose={() => toast.close(id)}
+            />
+          )
+        });
+      }
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError ? error.message : 'Não foi possível carregar as informações do exercicio';
+
+      toast.show({
+        placement: "top",
+        render: ({id}) => (
+          <ToastMessage 
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        )
+      })
+
+    } finally {
+      setIsSendingCompletedExerciseLoading(false);
+    }
   }
 
   function handleGoBack() {
@@ -131,7 +168,7 @@ export function Exercise() {
               </HStack>
             </HStack>
 
-            <Button title="Marcar como realizado" />
+            <Button title="Marcar como realizado" onPress={handleExerciseCompleted} isLoading={isSendingCompletedExerciseLoading}/>
           </Box>
         </VStack>
       </ScrollView>

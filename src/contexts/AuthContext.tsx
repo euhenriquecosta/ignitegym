@@ -31,7 +31,6 @@ export function AuthContextProvider({ children }: AuthContexProviderProps) {
   async function userAndTokenUpdate(userData: UserDTO, token: string) {
     const treatedToken = token.replaceAll('"', '') // Remove as " para não influenciar no header
     api.defaults.headers.common['Authorization'] = `Bearer ${treatedToken}`
-    console.log(treatedToken);
     
     setUser(userData);
   }
