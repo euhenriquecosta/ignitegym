@@ -29,7 +29,10 @@ export function AuthContextProvider({ children }: AuthContexProviderProps) {
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true);
 
   async function userAndTokenUpdate(userData: UserDTO, token: string) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    const treatedToken = token.replaceAll('"', '') // Remove as " para não influenciar no header
+    api.defaults.headers.common['Authorization'] = `Bearer ${treatedToken}`
+    console.log(treatedToken);
+    
     setUser(userData);
   }
 
@@ -83,7 +86,7 @@ export function AuthContextProvider({ children }: AuthContexProviderProps) {
       const userLogged = await storageUserGet();
 
       if (token && userLogged) {
-        userAndTokenUpdate(userLogged, token)
+        userAndTokenUpdate(userLogged, token);
       }
     } catch (error) {
       throw error;
