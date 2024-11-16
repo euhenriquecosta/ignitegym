@@ -4,6 +4,7 @@ import { LogOut } from 'lucide-react-native';
 import { useAuth } from "@hooks/useAuth";
 
 import defaultUserPhotoImg from '@assets/userPhotoDefault.png';
+
 import { UserPhoto } from "./UserPhoto";
 import { TouchableOpacity } from "react-native";
 

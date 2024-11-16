@@ -1,13 +1,16 @@
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
-import { useAuth } from "@hooks/useAuth";
-
-import { AuthRotes } from "./auth.routes";
-import { AppRoutes } from "./app.routes";
-
 import { gluestackUIConfig } from "../config/gluestack-ui.config";
 import { Box } from "@gluestack-ui/themed";
+
+import { useAuth } from "@hooks/useAuth";
+
 import { Loading } from "@components/Loading";
+import { AuthRotes } from "./auth.routes";
+
+import { AppRoutes } from "./app.routes";
+
+
 
 
 export function Routes() {

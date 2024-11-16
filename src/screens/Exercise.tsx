@@ -1,9 +1,10 @@
-import { Heading, HStack, Icon, VStack, Text, Box, useToast, Image } from "@gluestack-ui/themed";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
-import { ArrowLeft } from "lucide-react-native";
 import { ScrollView, TouchableOpacity } from "react-native";
 import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react-native";
+import { Heading, HStack, Icon, VStack, Text, Box, useToast, Image } from "@gluestack-ui/themed";
+
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 import BodySvg from '@assets/body.svg'
 import SeriesSvg from '@assets/series.svg'

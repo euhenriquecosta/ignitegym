@@ -4,6 +4,7 @@ import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { ChevronRight } from "lucide-react-native";
 
 import { ExerciseDTO } from "@dtos/ExerciseDTO";
+
 import { api } from "@services/api";
 
 type Props = TouchableOpacityProps & {

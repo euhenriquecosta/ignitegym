@@ -1,16 +1,15 @@
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { VStack, Text, SectionList, Heading, useToast } from "@gluestack-ui/themed";
+
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
+
 import { HistoryCard } from "@components/HistoryCard";
 import { Loading } from "@components/Loading";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { ToastMessage } from "@components/ToastMessage";
 import { HistoryByDayDTO } from "@dtos/HistoryByDayDto";
-import { VStack, Text, SectionList, Heading, useToast } from "@gluestack-ui/themed";
-import { useFocusEffect } from "@react-navigation/native";
-import { api } from "@services/api";
-import { storageAuthTokenSave } from "@storage/storageAuthToken";
-import { AppError } from "@utils/AppError";
-import { useCallback, useState } from "react";
-import { Exercise } from "./Exercise";
-import { HistoryDTO } from "@dtos/HistoryDTO";
 
 
 export function History() {

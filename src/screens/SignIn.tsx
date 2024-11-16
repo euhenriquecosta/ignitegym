@@ -1,7 +1,7 @@
-import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { Controller, useForm } from "react-hook-form";
 import { Center, Heading, Image, useToast, ScrollView, Text, VStack, Spinner } from "@gluestack-ui/themed";
-import { ToastMessage } from "@components/ToastMessage";
 
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
@@ -10,13 +10,13 @@ import { useAuth } from '@hooks/useAuth';
 import Logo from "@assets/logo.svg";
 import BackgroundImg from "@assets/background.png";
 
+import { ToastMessage } from "@components/ToastMessage";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
 import * as yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AppError } from "@utils/AppError";
-import { useState } from "react";
 
 type FormDataProps = {
   email: string;

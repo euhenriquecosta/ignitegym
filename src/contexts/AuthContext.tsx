@@ -6,10 +6,6 @@ import { api } from "@services/api";
 import { UserDTO } from "@dtos/UserDTO";
 import { storageAuthTokenGet, storageAuthTokenRemove, storageAuthTokenSave } from "@storage/storageAuthToken";
 
-type signInProps = {
-  email: string;
-  password: string;
-}
 
 export type AuthContextDataProps = {
   user: UserDTO;
