@@ -1,19 +1,76 @@
-import { Heading, HStack, Icon, VStack, Text, Image, Box } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
+import { Heading, HStack, Icon, VStack, Text, Box, useToast, Image } from "@gluestack-ui/themed";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { ArrowLeft } from "lucide-react-native";
 import { ScrollView, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
 
 import BodySvg from '@assets/body.svg'
 import SeriesSvg from '@assets/series.svg'
 import RepetitionSvg from '@assets/repetitions.svg'
-import { Button } from "@components/Button";
 
+import { api } from "@services/api";
+
+import { Button } from "@components/Button";
+import { Loading } from "@components/Loading";
+import { ToastMessage } from "@components/ToastMessage";
+
+import { AppError } from "@utils/AppError";
+import { ExerciseDTO } from "@dtos/ExerciseDTO";
+
+type RouteParamsProps = {
+  exerciseId: string;
+}
 export function Exercise() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [exercise, setExercise] = useState({} as ExerciseDTO);
+
+  const toast = useToast();
   const navigation = useNavigation<AppNavigatorRoutesProps>()
-  function handleGoBack() {
-    navigation.goBack()
+
+  const route = useRoute()
+
+  const { exerciseId } = route.params as RouteParamsProps;
+  
+  async function fetchExerciseDetails() {
+    try {
+      setIsLoading(true);
+      const response = await api.get(`/exercises/${exerciseId}`)
+      console.log("ID => ", exerciseId);
+      setExercise(response.data);
+      
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError ? error.message : 'Não foi possível carregar as informações do exercicio';
+
+      console.log(title);
+      
+      toast.show({
+        placement: "top",
+        render: ({id}) => (
+          <ToastMessage 
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        )
+      })
+
+    } finally {
+      setIsLoading(false);
+    }
+    
   }
+
+  function handleGoBack() {
+    navigation.goBack();
+  }
+
+  useEffect(() => {
+    fetchExerciseDetails();
+  }, [exerciseId]);
+
 
   return (
     <VStack flex={1}>
@@ -34,16 +91,17 @@ export function Exercise() {
             fontSize="$lg"
             flexShrink={1}
           >
-            Puxada Frontal
+            {exercise.name}
           </Heading>
           <HStack alignItems="center">
             <BodySvg />
 
-            <Text color="$gray200" ml="$1" textTransform="capitalize">Costas</Text>
+            <Text color="$gray200" ml="$1" textTransform="capitalize">{exercise.group}</Text>
           </HStack>
         </HStack>
       </VStack>
 
+      {isLoading ? <Loading /> : 
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 32 }}
@@ -51,7 +109,7 @@ export function Exercise() {
         <VStack p="$8">
           <Image
             source={{
-              uri: "https://static.wixstatic.com/media/2edbed_60c206e178ad4eb3801f4f47fc6523df~mv2.webp/v1/fill/w_350,h_375,al_c/2edbed_60c206e178ad4eb3801f4f47fc6523df~mv2.webp",
+              uri: `${api.defaults.baseURL}/exercise/demo/${exercise.demo}`,
             }}
             alt="Exercicio"
             mb="$3"
@@ -65,11 +123,11 @@ export function Exercise() {
             <HStack alignItems="center" justifyContent="space-around" mb="$6" mt="$5">
               <HStack>
                 <SeriesSvg />
-                <Text color="$gray200" ml="$2"> 3 séries</Text>
+                <Text color="$gray200" ml="$2">{exercise.series} séries</Text>
               </HStack>
               <HStack>
                 <RepetitionSvg />
-                <Text color="$gray200" ml="$2">12 repetições</Text>
+                <Text color="$gray200" ml="$2">{exercise.repetitions} repetições</Text>
               </HStack>
             </HStack>
 
@@ -77,6 +135,7 @@ export function Exercise() {
           </Box>
         </VStack>
       </ScrollView>
+      }
     </VStack>
   )
 }

@@ -1,17 +1,22 @@
-import { Heading, HStack, Image, VStack, Text, Icon } from "@gluestack-ui/themed"
-import { TouchableOpacity, TouchableOpacityProps } from "react-native"
-import { ChevronRight } from "lucide-react-native"
+import { Heading, HStack, Image, VStack, Text, Icon } from "@gluestack-ui/themed";
+import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 
+import { ChevronRight } from "lucide-react-native";
 
-type Props = TouchableOpacityProps & {}
+import { ExerciseDTO } from "@dtos/ExerciseDTO";
+import { api } from "@services/api";
 
-export function ExerciseCard({ ...rest }: Props) {
+type Props = TouchableOpacityProps & {
+  data: ExerciseDTO;
+}
+
+export function ExerciseCard({ data,  ...rest }: Props) {
   return (
     <TouchableOpacity {...rest}>
       <HStack bg="$gray600" alignItems="center" p="$4" pr="$4" mb={10} rounded="$md">
         <Image
           source={{
-            uri: "https://www.researchgate.net/publication/348435901/figure/fig26/AS:979519313829888@1610547011003/Figura-2-Exemplo-de-um-dos-exercicios-mais-tradicionais-que-tem-como-objetivo-aumentar-a.png"
+            uri: `${api.defaults.baseURL}/exercise/thumb/${data.thumb}`
           }}
           alt="Imagem de exercicios biceps"
           w="$16"
@@ -22,10 +27,10 @@ export function ExerciseCard({ ...rest }: Props) {
 
         />
         <VStack flex={1}>
-          <Heading color="$white">
-            Biceps Martelo
+          <Heading color="$white" fontSize="$lg" lineHeight="$sm" fontFamily="sans-serif">
+            {data.name}
           </Heading>
-          <Text fontSize="$sm" color="$gray200" mt="$1" numberOfLines={4}>3 séries x 12 repetições</Text>
+          <Text fontSize="$sm" color="$gray200" mt="$1" numberOfLines={4}>{data.series} séries x {data.repetitions} repetições</Text>
         </VStack>
         <Icon as={ChevronRight} color="$gray300" />
       </HStack>
