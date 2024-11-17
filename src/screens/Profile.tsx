@@ -23,7 +23,6 @@ import { useAuth } from "@hooks/useAuth";
 
 const PHOTO_SIZE = 35;
 
-
 const changePerfilSchema = yup.object({
   name: yup.string().required('Informe o nome.'),
   email: yup.string().optional(),
@@ -61,7 +60,7 @@ export function Profile() {
   const [userPhoto, setUserPhoto] = useState("https://github.com/euhenriquecosta.png");
 
   const toast = useToast();
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
 
   const { control, handleSubmit, formState: { errors }} = useForm<FormDataProps>({
     defaultValues: {
@@ -122,7 +121,12 @@ export function Profile() {
         old_password: data.password
       }
 
-      const response = await api.put('/users', body)
+      const userUpdated = user;
+      userUpdated.name = data.name;
+
+      await api.put('/users', body)
+
+      await updateUserProfile(userUpdated)
 
       toast.show({
         placement: "top",
