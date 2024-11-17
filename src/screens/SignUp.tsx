@@ -153,7 +153,7 @@ export function SignUp() {
                   placeholder="Senha"
                   secureTextEntry
                   onChangeText={onChange}
-                  autoComplete="off"
+                  autoComplete="password-new"
                   value={value}
                   errorMessage={errors.password?.message}
                 />
@@ -168,7 +168,7 @@ export function SignUp() {
                   placeholder="Confirme a Senha"
                   secureTextEntry
                   onChangeText={onChange}
-                  autoComplete="off"
+                  autoComplete="password-new"
                   value={value}
                   onSubmitEditing={handleSubmit(handleSignUp)}
                   returnKeyType="send"

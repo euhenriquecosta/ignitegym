@@ -1,9 +1,14 @@
 import { useState } from "react";
-import { Alert, ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 
-import { VStack, Center, Text, Heading, useToast } from "@gluestack-ui/themed";
+import { VStack, Center, Text, Heading, useToast, onChange } from "@gluestack-ui/themed";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { Controller, useForm } from "react-hook-form";
 
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
@@ -11,11 +16,56 @@ import { Button } from "@components/Button";
 import { Input } from "@components/Input";
 import { ToastMessage } from "@components/ToastMessage";
 
+import { useAuth } from "@hooks/useAuth";
+
+const PHOTO_SIZE = 35;
+
+
+const changePerfilSchema = yup.object({
+  name: yup.string().required('Informe o nome.'),
+  email: yup.string().optional(),
+  password: yup
+    .string()
+    .nullable()
+    .transform((value) => (!!value ? value : null))
+    .min(8, 'A senha atual deve ter pelo menos 8 dígitos.')
+    .when(['new_password', 'confirm_new_password'], {
+      is: (newPassword: string | null, confirmNewPassword: string | null) => !!newPassword && !!confirmNewPassword, // Se o campo "new_password e confirm_new_password" estiver preenchido
+      then: (schema) => schema.required('É necessário que preencha a senha atual.'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  new_password: yup
+    .string()
+    .nullable()
+    .transform((value) => (!!value ? value : null))
+    .min(8, 'A nova senha deve ter pelo menos 8 dígitos.'),
+  confirm_new_password: yup
+    .string()
+    .nullable()
+    .transform((value) => (!!value ? value : null))
+    .oneOf([yup.ref('new_password')], 'A confirmação da nova senha não confere.')
+    .when('new_password', {
+      is: (newPassword: string | null) => !!newPassword, // Se "new_password" estiver preenchido
+      then: (schema) => schema.required('A confirmação da nova senha é obrigatória.'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+});
+
+type FormDataProps = yup.InferType<typeof changePerfilSchema>;
 
 export function Profile() {
   const [userPhoto, setUserPhoto] = useState("https://github.com/euhenriquecosta.png")
 
   const toast = useToast();
+  const { user } = useAuth();
+
+  const { control, handleSubmit, formState: { errors }} = useForm<FormDataProps>({
+    defaultValues: {
+      name: user.name,
+      email: user.email
+    },
+    resolver: yupResolver(changePerfilSchema)
+  });
 
   async function handleUserPhotoSelect() {
     try {
@@ -36,7 +86,7 @@ export function Profile() {
           size: number
         }
 
-        if (photoInfo.size && (photoInfo.size / 1024 / 1024) > 0) {
+        if (photoInfo.size && (photoInfo.size / 1024 / 1024) > PHOTO_SIZE) {
           return toast.show({
             placement: "top",
             render: ({ id }) => (
@@ -57,11 +107,14 @@ export function Profile() {
       console.log(error)
     }
   }
+
+  async function handleProfileUpdate(data: FormDataProps) {
+    console.log(data);
+  }
+
   return (
     <VStack flex={1}>
       <ScreenHeader title="Perfil" />
-
-
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt="$6" px="$10">
           <UserPhoto
@@ -81,9 +134,34 @@ export function Profile() {
               Alterar Foto
             </Text>
           </TouchableOpacity>
+
+
           <Center w="$full" gap="$4">
-            <Input placeholder="Nome" bg="$gray600" />
-            <Input value="henrique@gmail.com.br" bg="$gray600" isReadOnly />
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { value, onChange } }) => (
+                <Input
+                  placeholder="Nome"
+                  bg="$gray600"
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.name?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { value } }) => (
+                <Input
+                  placeholder={value}
+                  bg="$gray600"
+                  isReadOnly
+                  value={value}
+                />
+              )}
+            />
           </Center>
 
           <Heading alignSelf="flex-start" fontFamily="$heading" color="$gray200" fontSize="$md" mt="$12" mb="$12">
@@ -91,15 +169,47 @@ export function Profile() {
           </Heading>
 
           <Center w="$full" gap="$4">
-            <Input placeholder="Senha antiga" bg="$gray600" secureTextEntry />
-            <Input placeholder="Nova senha" bg="$gray600" secureTextEntry />
-            <Input
-              placeholder="Confirme a nova senha"
-              bg="$gray600"
-              secureTextEntry
+            <Controller 
+              control={control}
+              name="password"
+              render={({ field: {onChange} })=> (
+                <Input
+                  placeholder="Senha atual" 
+                  bg="$gray600"
+                  onChangeText={onChange}
+                  secureTextEntry 
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+            <Controller 
+              control={control}
+              name="new_password"
+              render={({ field: {onChange} })=> (
+                <Input
+                  placeholder="Nova senha" 
+                  bg="$gray600"
+                  onChangeText={onChange}
+                  secureTextEntry 
+                  errorMessage={errors.new_password?.message}
+                />
+              )}
+            />
+            <Controller 
+              control={control}
+              name="confirm_new_password"
+              render={({ field: {onChange} })=> (
+                <Input
+                  placeholder="Confirme a nova senha" 
+                  bg="$gray600"
+                  onChangeText={onChange}
+                  secureTextEntry 
+                  errorMessage={errors.confirm_new_password?.message}
+                />
+              )}
             />
 
-            <Button title="Atualizar" />
+            <Button title="Atualizar" onPress={handleSubmit(handleProfileUpdate)} />
           </Center>
         </Center>
 

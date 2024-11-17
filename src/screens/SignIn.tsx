@@ -16,6 +16,7 @@ import { Button } from "@components/Button";
 
 import * as yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
+
 import { AppError } from "@utils/AppError";
 
 type FormDataProps = {
@@ -41,7 +42,7 @@ export function SignIn() {
   });
 
   function handleNewAccount() {
-    navigation.navigate("signUp")
+    navigation.navigate("signUp");
   }
 
   async function handleSignIn({ email, password }: FormDataProps) {
