@@ -8,6 +8,9 @@ import * as FileSystem from "expo-file-system";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
+import { AppError } from "@utils/AppError";
+import { api } from "@services/api";
+
 import { Controller, useForm } from "react-hook-form";
 
 import { ScreenHeader } from "@components/ScreenHeader";
@@ -54,7 +57,8 @@ const changePerfilSchema = yup.object({
 type FormDataProps = yup.InferType<typeof changePerfilSchema>;
 
 export function Profile() {
-  const [userPhoto, setUserPhoto] = useState("https://github.com/euhenriquecosta.png")
+  const [isLoading, setIsLoading] = useState(false);
+  const [userPhoto, setUserPhoto] = useState("https://github.com/euhenriquecosta.png");
 
   const toast = useToast();
   const { user } = useAuth();
@@ -109,7 +113,49 @@ export function Profile() {
   }
 
   async function handleProfileUpdate(data: FormDataProps) {
-    console.log(data);
+    try {
+      setIsLoading(true);
+
+      const body = {
+        name: data.name,
+        password: data.new_password,
+        old_password: data.password
+      }
+
+      const response = await api.put('/users', body)
+
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="success"
+            title="Perfil atualizado com sucesso!"
+            onClose={() => toast.close(id)}
+          />
+        )
+      })
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError ? error.message : 'Não foi possivel entrar. Tente novamente ou mais tarde.'
+
+      setIsLoading(false);
+      
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        )
+      })
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -209,7 +255,7 @@ export function Profile() {
               )}
             />
 
-            <Button title="Atualizar" onPress={handleSubmit(handleProfileUpdate)} />
+            <Button title="Atualizar" isLoading={isLoading} onPress={handleSubmit(handleProfileUpdate)} />
           </Center>
         </Center>
 
