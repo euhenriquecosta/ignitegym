@@ -17,7 +17,7 @@ type APIInstanceProps = AxiosInstance & {
 }
 
 const api = axios.create({
-  baseURL: 'http://192.168.100.120:3333',
+  baseURL: API_BASE_URL.toString(),
   timeout: 60000,
   timeoutErrorMessage: "A requisição demorou muito para responder. Tente novamente mais tarde.",
 }) as APIInstanceProps;
