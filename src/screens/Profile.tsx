@@ -3,13 +3,15 @@ import { ScrollView, TouchableOpacity } from "react-native";
 
 import { VStack, Center, Text, Heading, useToast, onChange } from "@gluestack-ui/themed";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { AppError } from "@utils/AppError";
 import { api } from "@services/api";
+
+import { PhotoDTO } from "@dtos/PhotoDTO";
+import defaultUserPhotoImg from '@assets/userPhotoDefault.png';
 
 import { Controller, useForm } from "react-hook-form";
 
@@ -21,7 +23,7 @@ import { ToastMessage } from "@components/ToastMessage";
 
 import { useAuth } from "@hooks/useAuth";
 
-const PHOTO_SIZE = 35;
+const PHOTO_SIZE = 5;
 
 const changePerfilSchema = yup.object({
   name: yup.string().required('Informe o nome.'),
@@ -57,7 +59,6 @@ type FormDataProps = yup.InferType<typeof changePerfilSchema>;
 
 export function Profile() {
   const [isLoading, setIsLoading] = useState(false);
-  const [userPhoto, setUserPhoto] = useState("https://github.com/euhenriquecosta.png");
 
   const toast = useToast();
   const { user, updateUserProfile } = useAuth();
@@ -78,33 +79,65 @@ export function Profile() {
         aspect: [4, 4],
         allowsEditing: true
       })
-
+      
       if (photoSelected.canceled) {
         return
       }
 
-      const photoURI = photoSelected.assets[0].uri
-      if (photoURI) {
-        const photoInfo = (await FileSystem.getInfoAsync(photoURI)) as {
-          size: number
-        }
-
-        if (photoInfo.size && (photoInfo.size / 1024 / 1024) > PHOTO_SIZE) {
+      const photoAsset = photoSelected.assets[0] as PhotoDTO
+      
+      if (!!photoAsset && !photoSelected.canceled) {
+        if (photoAsset.fileSize && (photoAsset.fileSize / 1024 / 1024) > PHOTO_SIZE) {
+          const title = `Essa imagem é muito grande. Escolha uma de até ${PHOTO_SIZE}MB`
           return toast.show({
             placement: "top",
             render: ({ id }) => (
               <ToastMessage
                 id={id}
                 action="error"
-                title="Essa imagem é muito grande. Escolha uma de até 5MB"
+                title={title}
                 onClose={() => toast.close(id)}
               />
             )
           })
-
+          
         }
 
-        setUserPhoto(photoURI)
+        const fileName = `${user.name.toString().toLowerCase().replace(' ', '-')}.${photoAsset.uri.split('.').pop()?.toLowerCase()}`
+
+        const photoFile = {
+          name: fileName,
+          uri: photoAsset.uri,
+          type: photoAsset.mimeType
+        } as any;
+
+        const userPhotoUploadForm = new FormData();
+        userPhotoUploadForm.append("avatar", photoFile);
+
+        const response = await api.patch('users/avatar', userPhotoUploadForm, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        if (response.status === 200) {
+          const userUpdated = user;
+          userUpdated.avatar = response.data.avatar;
+
+          updateUserProfile(userUpdated);
+
+          return toast.show({
+            placement: "top",
+            render: ({ id }) => (
+              <ToastMessage
+                id={id}
+                action="success"
+                title="Foto alterada com sucesso!"
+                onClose={() => toast.close(id)}
+              />
+            )
+          })
+        }
       }
     } catch (error) {
       console.log(error)
@@ -168,7 +201,7 @@ export function Profile() {
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt="$6" px="$10">
           <UserPhoto
-            source={{ uri: userPhoto }}
+            source={ user.avatar ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` } : defaultUserPhotoImg}
             alt="Foto do usuário"
             size="xl"
           />
